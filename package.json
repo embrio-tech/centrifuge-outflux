@@ -1,0 +1,10 @@
+{
+  "name": "centrifuge-outflux",
+  "version": "0.0.0",
+  "description": "An API service to consume data of the centrifuge ecosystem.",
+  "main": "index.js",
+  "repository": "git@github.com:embrio-tech/centrifuge-outflux.git",
+  "author": "Timon Heinis <timon@embrio.tech>",
+  "license": "LGPL-2.1",
+  "private": true
+}
