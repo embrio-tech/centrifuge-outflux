@@ -1,0 +1,9 @@
+{
+  "extends": "@tsconfig/node18-strictest-esm/tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist", /* Redirect output structure to the directory. */
+    "module": "CommonJS",
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "**/*.test.ts"]
+}

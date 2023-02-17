@@ -2,9 +2,48 @@
   "name": "centrifuge-outflux",
   "version": "0.0.0",
   "description": "An API service to consume data of the centrifuge ecosystem.",
-  "main": "index.js",
+  "main": "dist/index.js",
   "repository": "git@github.com:embrio-tech/centrifuge-outflux.git",
   "author": "Timon Heinis <timon@embrio.tech>",
   "license": "LGPL-2.1",
-  "private": true
+  "private": true,
+  "scripts": {
+    "start": "NODE_ENV=production node dist/index.js",
+    "develop:debug": "nodemon --inspect=0.0.0.0 src/index.ts",
+    "develop": "nodemon src/index.ts",
+    "build": "tsc -p .",
+    "clean": "rm -rf dist",
+    "test": "jest",
+    "test:watch": "jest --watchAll",
+    "lint": "eslint --max-warnings 0 'src/**/*.{ts,js}'",
+    "lint:fix": "eslint --fix --max-warnings 0 'src/**/*.{ts,js}'",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^17.4.3",
+    "@commitlint/config-conventional": "^17.4.3",
+    "@tsconfig/node18-strictest-esm": "^1.0.1",
+    "@types/jest": "^29.4.0",
+    "@types/node": "^18.13.0",
+    "@typescript-eslint/eslint-plugin": "^5.52.0",
+    "@typescript-eslint/parser": "^5.52.0",
+    "eslint": "^8.34.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "husky": "^8.0.3",
+    "jest": "^29.4.3",
+    "lint-staged": "^13.1.2",
+    "nodemon": "^2.0.20",
+    "prettier": "^2.8.4",
+    "prettier-eslint": "^15.0.1",
+    "ts-jest": "^29.0.5",
+    "ts-node": "^10.9.1",
+    "tsconfig-paths": "^4.1.2",
+    "typescript": "^4.9.5"
+  },
+  "lint-staged": {
+    "src/**/*.{js,ts}": [
+      "eslint --max-warnings 0"
+    ]
+  }
 }
