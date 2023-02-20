@@ -1,18 +1,17 @@
-import { server, errorHandler, ApiError } from './helpers'
+import { server, errorHandler, ApiPayload } from './helpers'
 import { PORT } from './config'
-import type { RouteGenericInterface } from 'fastify'
-
-interface RouteInterface extends RouteGenericInterface {
-  Querystring: { error: string, status?: string }
-}
-
-server.get<RouteInterface>('/', async (request) => {
-  const { query } = request
-  if (query.error) throw new ApiError(Number(query.status) || 400, { query }, 'The query param caused an error!')
-  return { hello: 'world' }
-})
+import routes from './routes'
 
 const main = async () => {
+  server.addHook<ApiPayload>('preSerialization', async function (request, reply, payload) {
+    reply.status(payload.statusCode)
+    this.log.debug({ payload, type: typeof payload }, 'preSerialzation payload')
+    return payload
+  })
+
+  await server.register(routes)
+  await server.after()
+  await server.ready()
   await server.listen({ port: Number(PORT) })
 }
 
