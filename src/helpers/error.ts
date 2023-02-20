@@ -35,7 +35,7 @@ server.setErrorHandler(function (error, request, reply) {
 
     // logging
     if (error.statusCode >= 500) {
-      this.log.error({ err: { ...error, stack }, reqId: request.id }, message)
+      this.log.error({ err: error, reqId: request.id }, message)
     } else if (error.statusCode >= 400) {
       this.log.info({ err: error, reqId: request.id }, message)
     } else {

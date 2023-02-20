@@ -4,9 +4,6 @@ import { NODE_ENV } from '../config'
 const envToLogger: Record<string, FastifyServerOptions['logger']> = {
   development: {
     level: 'debug',
-    transport: {
-      target: 'pino-pretty',
-    },
   },
   production: true,
 }

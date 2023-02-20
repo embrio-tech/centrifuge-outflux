@@ -9,8 +9,8 @@
   "private": true,
   "scripts": {
     "start": "NODE_ENV=production node dist/index.js",
-    "develop:debug": "nodemon --inspect=0.0.0.0 src/index.ts",
-    "develop": "nodemon src/index.ts",
+    "develop:debug": "nodemon --inspect=0.0.0.0 src/index.ts | pino-pretty",
+    "develop": "nodemon src/index.ts | pino-pretty",
     "build": "tsc -p .",
     "clean": "rm -rf dist",
     "test": "jest",
