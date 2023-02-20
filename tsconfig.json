@@ -3,6 +3,9 @@
   "compilerOptions": {
     "outDir": "./dist", /* Redirect output structure to the directory. */
     "module": "CommonJS",
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "allowUnreachableCode": true,
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "**/*.test.ts"]

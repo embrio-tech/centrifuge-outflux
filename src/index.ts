@@ -1,8 +1,14 @@
-import { server, errorHandler } from './helpers'
+import { server, errorHandler, ApiError } from './helpers'
 import { PORT } from './config'
+import type { RouteGenericInterface } from 'fastify'
 
-server.get('/', async (request) => {
-  server.log.debug(request.query, 'request query')
+interface RouteInterface extends RouteGenericInterface {
+  Querystring: { error: string }
+}
+
+server.get<RouteInterface>('/', async (request) => {
+  const { query } = request
+  if (query.error) throw new ApiError(400, { query }, 'The query param caused an error!')
   return { hello: 'world' }
 })
 
