@@ -9,3 +9,13 @@
 An API service to consume data of the centrifuge ecosystem.
 
 ## :construction: More Soon :construction:
+
+## Contact
+
+[EMBRIO.tech](https://embrio.tech)  
+[hello@embrio.tech](mailto:hello@embrio.tech)  
++41 44 552 00 75
+
+## License
+
+The code is licensed under the [GNU Lesser General Public License v2.1](https://github.com/embrio-tech/centrifuge-insights/blob/main/LICENSE)
