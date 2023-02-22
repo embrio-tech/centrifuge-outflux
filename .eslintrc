@@ -35,5 +35,5 @@
       }
     ]
   },
-  "ignorePatterns": ["src/types/**/*.*", "dist/**/*"]
+  "ignorePatterns": ["dist/**/*"]
 }

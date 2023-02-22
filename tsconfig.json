@@ -1,12 +1,15 @@
 {
   "extends": "@tsconfig/node18-strictest-esm/tsconfig.json",
   "compilerOptions": {
-    "outDir": "./dist", /* Redirect output structure to the directory. */
+    "outDir": "./dist" /* Redirect output structure to the directory. */,
     "module": "CommonJS",
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "allowUnreachableCode": true,
+    "allowUnreachableCode": true
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "**/*.test.ts"]
+  "exclude": ["node_modules", "**/*.test.ts"],
+  "ts-node": {
+    "files": true
+  }
 }
