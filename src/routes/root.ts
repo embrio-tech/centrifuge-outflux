@@ -18,7 +18,11 @@ const routes: FastifyPluginCallback = async function (server, _options, done) {
   })
 
   server.get<HealthGetInterface>('/health', async () => {
-    return new ApiPayload(200, `I am good. Thanks for asking. (NODE_ENV=${NODE_ENV}, OPS_ENV=${OPS_ENV}, version=v${npm_package_version})`)
+    return new ApiPayload(200, 'I am good. Thanks for asking.', {
+      NODE_ENV,
+      OPS_ENV,
+      npm_package_version,
+    })
   })
 
   done()
