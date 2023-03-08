@@ -21,10 +21,6 @@ const routes: FastifyPluginCallback = async function (server, _options, done) {
     return new ApiPayload(200, `I am good. Thanks for asking. (NODE_ENV=${NODE_ENV}, OPS_ENV=${OPS_ENV}, version=v${npm_package_version})`)
   })
 
-  server.all('*', async (request) => {
-    throw new ApiError(404, undefined, `Can't find ${request.url} on this server!`)
-  })
-
   done()
 }
 
