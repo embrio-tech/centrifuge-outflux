@@ -4,7 +4,7 @@ import Pino from 'pino'
 
 const main = async () => {
   const server = await buildServer()
-  return server.listen({ port: Number(PORT) })
+  return server.listen({ port: Number(PORT), host: '0.0.0.0' })
 }
 
 main().catch((error) => {
