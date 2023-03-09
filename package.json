@@ -56,7 +56,8 @@
     "dotenv": "^16.0.3",
     "fastify": "^4.13.0",
     "graphql": "^16.6.0",
-    "graphql-yoga": "^3.6.0"
+    "graphql-yoga": "^3.6.0",
+    "mongoose": "^7.0.1"
   },
   "nodemonConfig": {
     "verbose": false,

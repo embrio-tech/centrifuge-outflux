@@ -7,10 +7,10 @@ import { join } from 'path'
 import resolvers from '../resolvers'
 
 const routes: FastifyPluginCallback = async function (server, _options, done) {
-  server.log.debug({ path: join(__dirname, '../schemas/**/*.graphql') }, 'load GraphQL schemas from')
+  server.log.debug({ path: join(__dirname, '../schemas/**/*.graphql') }, 'Load GraphQL schemas from')
   const schema = await loadSchema(join(__dirname, '../schemas/schema.graphql'), { loaders: [new GraphQLFileLoader()] })
 
-  server.log.debug(resolvers, 'load graphql resolvers')
+  server.log.debug(resolvers, 'Load GraphQL resolvers')
   const schemaWithResolvers = addResolversToSchema({ schema, resolvers })
 
   const graphqlServer = createYoga<{
