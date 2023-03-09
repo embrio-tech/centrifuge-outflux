@@ -18,10 +18,20 @@ const routes: FastifyPluginCallback = async function (server, _options, done) {
   })
 
   server.get<HealthGetInterface>('/health', async () => {
+    const {
+      connection: {
+        host,
+        db: { namespace },
+      },
+    } = server.mongoose
     return new ApiPayload(200, 'I am good. Thanks for asking.', {
       NODE_ENV,
       OPS_ENV,
       npm_package_version,
+      db: {
+        host,
+        namespace,
+      },
     })
   })
 

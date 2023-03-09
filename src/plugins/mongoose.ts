@@ -1,8 +1,9 @@
 import type { FastifyPluginCallback } from 'fastify'
 import { connect } from 'mongoose'
+import fp from 'fastify-plugin'
 import { DB_URI } from '../config'
 
-const plugin: FastifyPluginCallback = async function (server) {
+const plugin: FastifyPluginCallback = fp(async function (server) {
   server.log.debug('MongoDB connection initializing...')
   const mongoose = await connect(DB_URI, { connectTimeoutMS: 5000 })
 
@@ -22,6 +23,6 @@ const plugin: FastifyPluginCallback = async function (server) {
     await mongoose.connection.close()
     server.log.info('MongoDB connection closed')
   })
-}
+})
 
 export default plugin
