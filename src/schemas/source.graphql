@@ -1,0 +1,6 @@
+type Source {
+  _id: String!
+  source: String!
+  objectId: String!
+  lastFetchedAt: String
+}

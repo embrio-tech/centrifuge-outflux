@@ -1,0 +1,6 @@
+#import Source from 'source.graphql'
+
+type Loan { 
+  _id: String!
+  sources: [Source!]!
+}
