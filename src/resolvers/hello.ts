@@ -1,19 +1,14 @@
-import type { IFieldResolver } from '@graphql-tools/utils'
-import type { FastifyReply, FastifyRequest } from 'fastify'
+import type { GraphQL } from '../@types'
 
-type IHelloFieldResolver = IFieldResolver<
-{ name: string },
-{
-  request: FastifyRequest
-  reply: FastifyReply
+const resolvers: GraphQL.HelloResolvers<GraphQL.ServerContext> = {
+  long: async (source) => {
+    const { name } = source
+    return `hello ${name}!`
+  },
+  short: async (source) => {
+    const { name } = source
+    return `hi ${name}`
+  },
 }
->
 
-export const short: IHelloFieldResolver = async (source) => {
-  const { name } = source
-  return `hi ${name}`
-}
-export const long: IHelloFieldResolver = async (source) => {
-  const { name } = source
-  return `hello ${name}!`
-}
+export default resolvers

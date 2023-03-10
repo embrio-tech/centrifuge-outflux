@@ -1,4 +1,5 @@
 type Hello {
+  name: String!
   long: String
   short: String
 }

@@ -1,17 +1,9 @@
-// export * from './hello'
+import type { GraphQL } from '../@types'
 
-import type { IResolvers } from '@graphql-tools/utils'
-import type { FastifyReply, FastifyRequest } from 'fastify'
-import * as Hello from './hello'
+import Hello from './hello'
+import Loan from './loan'
 
-const resolvers: IResolvers<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  any,
-  {
-    request: FastifyRequest
-    reply: FastifyReply
-  }
-> = {
+const resolvers: GraphQL.Resolvers<GraphQL.ServerContext> = {
   Query: {
     hello: async () => ({ name: 'world' }),
     loans: async () => [
@@ -33,6 +25,7 @@ const resolvers: IResolvers<
   },
 
   Hello,
+  Loan,
 }
 
 export default resolvers
