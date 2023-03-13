@@ -104,4 +104,4 @@ dist
 .tern-port
 
 # autogernated types
-src/@types/graphql/resolvers.d.ts
+src/@types/graphql/generated.d.ts

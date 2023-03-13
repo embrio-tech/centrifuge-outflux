@@ -1,7 +1,7 @@
 import type { FastifyRequest, FastifyReply, FastifyInstance } from 'fastify'
 import type { IFieldResolver } from '@graphql-tools/utils'
 // https://www.typescriptlang.org/docs/handbook/modules.html#import-a-module-for-side-effects-only
-import './resolvers'
+import './generated'
 
 declare namespace GraphQL {
   export interface ServerContext {
@@ -15,5 +15,5 @@ declare namespace GraphQL {
     [key in keyof FieldsSchema]?: IFieldResolver<SourceSchema, ServerContext>
   }
 
-  export * from './resolvers'
+  export * from './generated'
 }
