@@ -1,5 +1,5 @@
-#import Hello from 'hello.graphql'
+#import Loan from 'loan.graphql'
 
 type Query {
-  hello: Hello
+  loans: [Loan!]!
 }

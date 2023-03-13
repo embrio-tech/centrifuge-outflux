@@ -35,5 +35,5 @@
       }
     ]
   },
-  "ignorePatterns": ["dist/**/*"]
+  "ignorePatterns": ["dist/**/*", "src/@types/graphql/generated.d.ts"]
 }

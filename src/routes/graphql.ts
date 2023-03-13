@@ -1,22 +1,20 @@
 import { createYoga } from 'graphql-yoga'
-import type { FastifyPluginCallback, FastifyRequest, FastifyReply } from 'fastify'
+import type { FastifyPluginCallback } from 'fastify'
 import { addResolversToSchema } from '@graphql-tools/schema'
 import { loadSchema } from '@graphql-tools/load'
 import { GraphQLFileLoader } from '@graphql-tools/graphql-file-loader'
 import { join } from 'path'
 import resolvers from '../resolvers'
+import type { GraphQL } from '../@types'
 
 const routes: FastifyPluginCallback = async function (server, _options, done) {
-  server.log.debug({ path: join(__dirname, '../schemas/**/*.graphql') }, 'load GraphQL schemas from')
+  server.log.debug({ path: join(__dirname, '../schemas/**/*.graphql') }, 'Load GraphQL schemas from')
   const schema = await loadSchema(join(__dirname, '../schemas/schema.graphql'), { loaders: [new GraphQLFileLoader()] })
 
-  server.log.debug(resolvers, 'load graphql resolvers')
+  server.log.debug(resolvers, 'Load GraphQL resolvers')
   const schemaWithResolvers = addResolversToSchema({ schema, resolvers })
 
-  const graphqlServer = createYoga<{
-    request: FastifyRequest
-    reply: FastifyReply
-  }>({
+  const graphqlServer = createYoga<GraphQL.ServerContext>({
     // Integrate Fastify logger
     logging: {
       debug: (...args) => args.forEach((arg) => server.log.debug(arg)),
@@ -34,10 +32,10 @@ const routes: FastifyPluginCallback = async function (server, _options, done) {
     url: '/',
     method: ['GET', 'POST', 'OPTIONS'],
     handler: async (request, reply) => {
-      // Second parameter adds Fastify's `request` and `reply` to the GraphQL Context
       const response = await graphqlServer.handleNodeRequest(request, {
         request,
         reply,
+        server,
       })
       response.headers.forEach((value, key) => {
         reply.header(key, value)

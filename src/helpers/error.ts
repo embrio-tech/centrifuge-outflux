@@ -1,33 +1,7 @@
 import { STATUS_CODES } from 'http'
-import { server } from './server'
+import type fastify from 'fastify'
 
-export const errorHandler = (error: unknown) => {
-  server.log.error(error)
-}
-
-export class ApiError extends Error {
-  statusCode: number
-  status: string
-  context?: unknown
-
-  constructor(statusCode: number, context?: unknown, ...params: ConstructorParameters<typeof Error>) {
-    // Pass remaining arguments (including vendor specific ones) to parent constructor
-    super(...params)
-
-    // Maintains proper stack trace for where our error was thrown (only available on V8)
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, this.constructor)
-    }
-
-    this.status = STATUS_CODES[statusCode] || 'Unspecified Status Code'
-    if (!this.message) this.message = this.status
-    this.name = 'ApiError'
-    this.statusCode = statusCode
-    this.context = context
-  }
-}
-
-server.setErrorHandler(function (error, request, reply) {
+export const errorHandler: Parameters<ReturnType<typeof fastify>['setErrorHandler']>[0] = function (error, request, reply) {
   const { message, name, stack } = error
   if (error instanceof ApiError) {
     this.log.debug(undefined, 'ApiError Handler')
@@ -53,4 +27,26 @@ server.setErrorHandler(function (error, request, reply) {
     this.log.error(error)
     reply.status(500).send({ statusCode: 500, error: STATUS_CODES[500], message, name, stack })
   }
-})
+}
+
+export class ApiError extends Error {
+  statusCode: number
+  status: string
+  context?: unknown
+
+  constructor(statusCode: number, context?: unknown, ...params: ConstructorParameters<typeof Error>) {
+    // Pass remaining arguments (including vendor specific ones) to parent constructor
+    super(...params)
+
+    // Maintains proper stack trace for where our error was thrown (only available on V8)
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, this.constructor)
+    }
+
+    this.status = STATUS_CODES[statusCode] || 'Unspecified Status Code'
+    if (!this.message) this.message = this.status
+    this.name = 'ApiError'
+    this.statusCode = statusCode
+    this.context = context
+  }
+}
