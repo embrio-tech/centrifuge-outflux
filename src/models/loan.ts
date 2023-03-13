@@ -1,28 +1,39 @@
-import { Schema, model } from 'mongoose'
+import type { FastifyPluginCallback } from 'fastify'
+import type { GraphQL } from '../@types'
+import fp from 'fastify-plugin'
 
-export interface ILoan {
-  sources: Source[]
-}
+// TODO: separate mongoose model interface from graphql interface. Dont use GraphQL.Loan
 
-export interface Source {
-  source: string
-  objectId: string
-  lastFetchedAt?: Date
-}
+const plugin: FastifyPluginCallback = fp(
+  async function (server) {
+    server.log.debug('Loan model attaching...')
 
-const loanSchema = new Schema<ILoan>(
-  {
-    sources: [
+    const loanSchema = new server.mongoose.Schema<GraphQL.Loan>(
       {
-        source: { type: String, required: true },
-        objectId: { type: String, required: true },
-        lastFetchedAt: { type: Date, required: false },
+        sources: [
+          {
+            source: { type: String, required: true },
+            objectId: { type: String, required: true },
+            lastFetchedAt: { type: Date, required: false },
+          },
+        ],
       },
-    ],
+      {
+        optimisticConcurrency: true,
+      }
+    )
+
+    server.models.Loan = server.mongoose.model<GraphQL.Loan>('Loan', loanSchema)
+
+    server.log.debug('Loan model attached')
   },
   {
-    optimisticConcurrency: true,
+    name: 'loan',
+    decorators: {
+      fastify: ['mongoose', 'models'],
+    },
+    dependencies: ['mongoose'],
   }
 )
 
-export const Loan = model<ILoan>('Loan', loanSchema)
+export default plugin

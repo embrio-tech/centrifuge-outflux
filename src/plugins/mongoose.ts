@@ -1,5 +1,6 @@
 import type { FastifyPluginCallback } from 'fastify'
 import { connect } from 'mongoose'
+import type { Model } from 'mongoose'
 import fp from 'fastify-plugin'
 import { DB_URI } from '../config'
 
@@ -18,11 +19,14 @@ const plugin: FastifyPluginCallback = fp(async function (server) {
   // add mongose instance to server instance
   server.decorate('mongoose', mongoose)
 
+  // add models object
+  server.decorate<{ [key: string]: Model<unknown> }>('models', {})
+
   // disconnect on application close
   server.addHook('onClose', async function (server) {
     await mongoose.connection.close()
     server.log.info('MongoDB connection closed')
   })
-})
+}, { name: 'mongoose' })
 
 export default plugin

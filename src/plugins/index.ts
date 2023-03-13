@@ -4,6 +4,7 @@ import cors from '@fastify/cors'
 import traps from '@dnlup/fastify-traps'
 import { CORS_REGEX, NODE_ENV } from '../config'
 import mongoose from './mongoose'
+import models from './models'
 
 export async function registerServerPlugins(server: FastifyInstance) {
   // add kill handlers
@@ -11,6 +12,9 @@ export async function registerServerPlugins(server: FastifyInstance) {
 
   // connect to MongoDB
   await server.register(mongoose)
+
+  // attach models
+  await server.register(models)
 
   if (NODE_ENV === 'production') {
     // Security

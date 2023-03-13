@@ -1,1 +1,1 @@
-export * from './loan'
+export { default as loan } from './loan'
