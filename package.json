@@ -9,24 +9,29 @@
   "private": true,
   "scripts": {
     "start": "NODE_ENV=production node dist/index.js",
-    "develop:debug": "nodemon --inspect=0.0.0.0 src/index.ts | pino-pretty",
-    "develop": "nodemon src/index.ts | pino-pretty",
-    "build": "tsc -p .",
+    "develop:debug": "concurrently \"nodemon --inspect=0.0.0.0 src/index.ts | pino-pretty\" \"yarn generate --watch 'src/schemas/**/*.graphql'\"",
+    "develop": "concurrently \"nodemon src/index.ts | pino-pretty\" \"yarn generate --watch 'src/schemas/**/*.graphql'\"",
+    "build": "graphql-codegen && tsc -p .",
     "clean": "rm -rf dist",
     "test": "jest",
     "test:watch": "jest --watchAll",
     "lint": "eslint --max-warnings 0 'src/**/*.{ts,js}'",
     "lint:fix": "eslint --fix --max-warnings 0 'src/**/*.{ts,js}'",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "generate": "graphql-codegen"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.4.3",
     "@commitlint/config-conventional": "^17.4.3",
+    "@graphql-codegen/cli": "^3.2.2",
+    "@graphql-codegen/typescript": "^3.0.2",
+    "@graphql-codegen/typescript-resolvers": "^3.1.1",
     "@tsconfig/node18-strictest-esm": "^1.0.1",
     "@types/jest": "^29.4.0",
     "@types/node": "^18.13.0",
     "@typescript-eslint/eslint-plugin": "^5.52.0",
     "@typescript-eslint/parser": "^5.52.0",
+    "concurrently": "^7.6.0",
     "eslint": "^8.34.0",
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-prettier": "^4.2.1",
@@ -48,15 +53,24 @@
     ]
   },
   "dependencies": {
+    "@dnlup/fastify-traps": "^2.0.0",
+    "@fastify/cors": "^8.2.0",
+    "@fastify/helmet": "^10.1.0",
     "@graphql-tools/graphql-file-loader": "^7.5.16",
     "@graphql-tools/load": "^7.8.12",
     "dotenv": "^16.0.3",
     "fastify": "^4.13.0",
+    "fastify-plugin": "^4.5.0",
     "graphql": "^16.6.0",
-    "graphql-yoga": "^3.6.0"
+    "graphql-scalars": "^1.20.1",
+    "graphql-yoga": "^3.6.0",
+    "mongoose": "^7.0.1"
   },
   "nodemonConfig": {
     "verbose": false,
+    "execMap": {
+      "ts": "node --require tsconfig-paths/register --require ts-node/register"
+    },
     "ignore": [
       "**/*.test.ts",
       "**/*.spec.ts"

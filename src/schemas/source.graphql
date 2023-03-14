@@ -1,0 +1,12 @@
+#import ObjectID from 'scalars.graphql'
+#import DateTime from 'scalars.graphql'
+#import JSON from 'scalars.graphql'
+#import DataFrame from 'dataFrame.graphql'
+
+type Source {
+  source: String!
+  objectId: String!
+  lastFetchedAt: DateTime
+  dataFrame: DataFrame
+  _id: ObjectID!
+}

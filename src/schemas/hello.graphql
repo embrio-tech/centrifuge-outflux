@@ -1,4 +1,0 @@
-type Hello {
-  long: String
-  short: String
-}
