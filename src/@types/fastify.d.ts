@@ -10,5 +10,6 @@ declare module 'fastify' {
       Loan: Model<ILoan>
       DataFrame: Model<IDataFrame>
     }
+    verifyApiKey: () => Promise<void>
   }
 }
