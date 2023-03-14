@@ -5,6 +5,13 @@ const config: CodegenConfig = {
   generates: {
     './src/@types/graphql/generated.d.ts': {
       plugins: ['typescript', 'typescript-resolvers'],
+      config: {
+        scalars: {
+          JSON: 'any',
+          DateTime: 'string',
+          ObjectID: 'string',
+        },
+      },
     },
   },
 }

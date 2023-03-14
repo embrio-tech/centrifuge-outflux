@@ -62,6 +62,7 @@
     "fastify": "^4.13.0",
     "fastify-plugin": "^4.5.0",
     "graphql": "^16.6.0",
+    "graphql-scalars": "^1.20.1",
     "graphql-yoga": "^3.6.0",
     "mongoose": "^7.0.1"
   },

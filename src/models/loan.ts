@@ -1,14 +1,22 @@
 import type { FastifyPluginCallback } from 'fastify'
-import type { GraphQL } from '../@types'
 import fp from 'fastify-plugin'
 
-// TODO: separate mongoose model interface from graphql interface. Dont use GraphQL.Loan
+export interface ILoan {
+  sources: ISource[]
+}
+
+export interface ISource {
+  source: string
+  objectId: string
+  lastFetchedAt?: Date
+}
 
 const plugin: FastifyPluginCallback = fp(
   async function (server) {
     server.log.debug('Loan model attaching...')
+    const { Schema, model } = server.mongoose
 
-    const loanSchema = new server.mongoose.Schema<GraphQL.Loan>(
+    const schema = new Schema<ILoan>(
       {
         sources: [
           {
@@ -20,10 +28,11 @@ const plugin: FastifyPluginCallback = fp(
       },
       {
         optimisticConcurrency: true,
+        timestamps: true,
       }
     )
 
-    server.models.Loan = server.mongoose.model<GraphQL.Loan>('Loan', loanSchema)
+    server.models.Loan = model<ILoan>('Loan', schema)
 
     server.log.debug('Loan model attached')
   },

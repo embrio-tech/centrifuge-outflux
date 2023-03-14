@@ -1,9 +1,11 @@
-#import Source from 'source.graphql'
 #import ObjectID from 'scalars.graphql'
 #import DateTime from 'scalars.graphql'
+#import JSON from 'scalars.graphql'
 
-type Loan {
-  sources: [Source!]!
+type DataFrame { 
+  source: String!
+  data: JSON
+  loan: ObjectID!
   _id: ObjectID!
   createdAt: DateTime
   updatedAt: DateTime
