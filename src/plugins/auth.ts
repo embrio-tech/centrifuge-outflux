@@ -11,8 +11,6 @@ const plugin: FastifyPluginCallback = fp(async function (server) {
   })
 
   await server.register(fauth)
-
-  server.addHook('preHandler', server.auth([server.verifyApiKey]))
 })
 
 export default plugin

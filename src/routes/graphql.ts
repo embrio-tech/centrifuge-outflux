@@ -31,6 +31,7 @@ const routes: FastifyPluginCallback = async function (server, _options, done) {
   server.route({
     url: '/',
     method: ['GET', 'POST', 'OPTIONS'],
+    preHandler: server.auth([server.verifyApiKey]),
     handler: async (request, reply) => {
       const response = await graphqlServer.handleNodeRequest(request, {
         request,
