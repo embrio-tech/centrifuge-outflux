@@ -5,6 +5,7 @@ import traps from '@dnlup/fastify-traps'
 import { CORS_REGEX, NODE_ENV } from '../config'
 import mongoose from './mongoose'
 import models from './models'
+import auth from './auth'
 
 export async function registerServerPlugins(server: FastifyInstance) {
   // add kill handlers
@@ -22,6 +23,9 @@ export async function registerServerPlugins(server: FastifyInstance) {
   }
   // cors
   await server.register(cors, { origin: CORS_REGEX !== undefined ? new RegExp(CORS_REGEX) : '*' })
+
+  // auth
+  await server.register(auth)
 
   return server
 }
