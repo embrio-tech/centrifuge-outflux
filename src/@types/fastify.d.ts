@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type fastify from 'fastify'
+import type fastify, { FastifyRequest } from 'fastify'
 import type { Model } from 'mongoose'
 import type { IDataFrame, ILoan } from '../models/dataFrame'
 
@@ -10,6 +10,6 @@ declare module 'fastify' {
       Loan: Model<ILoan>
       DataFrame: Model<IDataFrame>
     }
-    verifyApiKey: () => Promise<void>
+    verifyApiKey: (request: FastifyRequest) => Promise<void>
   }
 }
