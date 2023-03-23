@@ -1,6 +1,6 @@
 import type { GraphQL } from '../@types'
 
-const resolvers: GraphQL.DataFrameResolvers<GraphQL.ServerContext> = {
+const resolvers: GraphQL.EntityResolvers<GraphQL.ServerContext> = {
   // TODO: ad non-trivial resolvers here
 }
 

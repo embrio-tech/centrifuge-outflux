@@ -1,10 +1,7 @@
-#import Source from 'source.graphql'
-#import ObjectID from 'scalars.graphql'
-#import DateTime from 'scalars.graphql'
+#import Entity from 'entity.graphql'
+#import Frame from 'frame.graphql'
 
 type Loan {
-  sources: [Source!]!
-  _id: ObjectID!
-  createdAt: DateTime
-  updatedAt: DateTime
+  entity: Entity
+  pod: Frame
 }

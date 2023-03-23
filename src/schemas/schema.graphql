@@ -1,5 +1,8 @@
 #import Loan from 'loan.graphql'
 
 type Query {
+  """
+  A list of loans
+  """
   loans: [Loan!]!
 }

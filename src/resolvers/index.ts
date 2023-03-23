@@ -2,7 +2,8 @@ import type { GraphQL } from '../@types'
 import Query from './query'
 import Loan from './loan'
 import Source from './source'
-import DataFrame from './dataFrame'
+import Frame from './frame'
+import Entity from './entity'
 import { JSONResolver, DateTimeResolver, ObjectIDResolver } from 'graphql-scalars'
 
 const resolvers: GraphQL.Resolvers<GraphQL.ServerContext> = {
@@ -11,8 +12,9 @@ const resolvers: GraphQL.Resolvers<GraphQL.ServerContext> = {
   ObjectID: ObjectIDResolver,
   Query,
   Loan,
+  Entity,
   Source,
-  DataFrame,
+  Frame,
 }
 
 export default resolvers

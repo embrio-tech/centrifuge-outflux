@@ -1,12 +1,19 @@
 #import ObjectID from 'scalars.graphql'
 #import DateTime from 'scalars.graphql'
 #import JSON from 'scalars.graphql'
-#import DataFrame from 'dataFrame.graphql'
+#import Frame from 'frame.graphql'
+#import SourceType from 'enums.graphql'
 
+"""
+A `Source` defines where the indexed data is sourced from.
+"""
 type Source {
-  source: String!
+  entity: ObjectID!
+  type: SourceType
   objectId: String!
   lastFetchedAt: DateTime
-  dataFrame: DataFrame
+  frames: [Frame!]
+  createdAt: DateTime
+  updatedAt: DateTime
   _id: ObjectID!
 }

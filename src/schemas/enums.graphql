@@ -1,0 +1,11 @@
+enum EntityType {
+  loan
+  loanTemplate
+}
+
+enum SourceType {
+  ipfs
+  subql
+  chain
+  pod
+}
