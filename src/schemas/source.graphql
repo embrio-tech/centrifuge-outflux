@@ -3,17 +3,19 @@
 #import JSON from 'scalars.graphql'
 #import Frame from 'frame.graphql'
 #import SourceType from 'enums.graphql'
+#import Document from 'generic.graphql'
+#import ListQuery from 'generic.graphql'
 
 """
 A `Source` defines where the indexed data is sourced from.
 """
-type Source {
+type Source implements Document {
   entity: ObjectID!
   type: SourceType
   objectId: String!
   lastFetchedAt: DateTime
-  frames: [Frame!]
-  createdAt: DateTime
-  updatedAt: DateTime
+  frames(query: ListQuery): [Frame!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
   _id: ObjectID!
 }
