@@ -48,8 +48,8 @@ const routes: FastifyPluginCallback = async function (server, _options, done) {
     url: '/',
     method: ['GET', 'OPTIONS', 'POST'],
     preHandler:
-      OPS_ENV === 'production'
-        ? server.auth([server.verifyApiKey])
+      OPS_ENV === 'local'
+        ? server.auth([server.verifyApiKey, server.verifyJw3t], { relation: 'or' })
         : async () => {
             return
           },
