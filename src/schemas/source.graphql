@@ -1,12 +1,21 @@
 #import ObjectID from 'scalars.graphql'
 #import DateTime from 'scalars.graphql'
 #import JSON from 'scalars.graphql'
-#import DataFrame from 'dataFrame.graphql'
+#import Frame from 'frame.graphql'
+#import SourceType from 'enums.graphql'
+#import Document from 'generic.graphql'
+#import ListQuery from 'generic.graphql'
 
-type Source {
-  source: String!
+"""
+A `Source` defines where the indexed data is sourced from.
+"""
+type Source implements Document {
+  entity: ObjectID!
+  type: SourceType
   objectId: String!
   lastFetchedAt: DateTime
-  dataFrame: DataFrame
+  frames(query: ListQuery): [Frame!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
   _id: ObjectID!
 }

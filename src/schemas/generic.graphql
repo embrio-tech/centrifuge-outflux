@@ -1,0 +1,39 @@
+#import ObjectID from 'scalars.graphql'
+#import DateTime from 'scalars.graphql'
+#import JSON from 'scalars.graphql'
+
+interface Document {
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  _id: ObjectID!
+}
+
+enum SortDirection {
+  asc
+  desc
+}
+
+input Sort {
+  key: String!
+  dir: SortDirection!
+}
+
+
+input ListQuery {
+  """
+  Filter object supporting [MongoDB Query Operators](https://www.mongodb.com/docs/manual/reference/operator/query/) (default `filter = {}`).
+  """
+  filter: JSON
+  """
+  Specify sort `key` and direction `dir`.
+  """
+  sort: Sort
+  """
+  The amount of documents to skip (default `skip = 0`)
+  """
+  skip: Int
+  """
+  The amount of documents to deliver (default `limit = 10`)
+  """
+  limit: Int
+}

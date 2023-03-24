@@ -1,5 +1,16 @@
 #import Loan from 'loan.graphql'
+#import Entity from 'entity.graphql'
+#import EntityType from 'enums.graphql'
+#import ListQuery from 'generic.graphql'
 
 type Query {
+  """
+  Get a list of loans
+  """
   loans: [Loan!]!
+
+  """
+  Get a list of entities by type
+  """
+  entities(type: EntityType!, query: ListQuery): [Entity!]!
 }

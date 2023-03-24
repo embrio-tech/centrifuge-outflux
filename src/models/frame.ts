@@ -2,21 +2,20 @@ import type { FastifyPluginCallback } from 'fastify'
 import fp from 'fastify-plugin'
 import type { Types } from 'mongoose'
 
-export interface IDataFrame {
-  source: string
+export interface IFrame {
+  source: Types.ObjectId
   data: unknown
-  loan: Types.ObjectId
+  type?: string
 }
 
 const plugin: FastifyPluginCallback = fp(
   async function (server) {
-    server.log.debug('DataFrame model attaching...')
+    server.log.debug('Frame model attaching...')
     const { Schema, model } = server.mongoose
 
-    const schema = new Schema<IDataFrame>(
+    const schema = new Schema<IFrame>(
       {
-        loan: { type: Schema.Types.ObjectId, ref: 'Loan', required: true },
-        source: { type: String },
+        source: { type: Schema.Types.ObjectId, ref: 'Source', required: true },
         data: { type: Schema.Types.Mixed },
       },
       {
@@ -25,12 +24,12 @@ const plugin: FastifyPluginCallback = fp(
       }
     )
 
-    server.models.DataFrame = model<IDataFrame>('DataFrame', schema)
+    server.models.Frame = model<IFrame>('Frame', schema)
 
-    server.log.debug('DataFrame model attached')
+    server.log.debug('Frame model attached')
   },
   {
-    name: 'data-frame',
+    name: 'frame',
     decorators: {
       fastify: ['mongoose', 'models'],
     },

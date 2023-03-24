@@ -1,0 +1,15 @@
+#import ObjectID from 'scalars.graphql'
+#import JSON from 'scalars.graphql'
+#import DateTime from 'scalars.graphql'
+#import Document from 'generic.graphql'
+
+"""
+A `Frame` captures indexed raw data.
+"""
+type Frame implements Document {
+  source: ObjectID!
+  data: JSON
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  _id: ObjectID!
+}

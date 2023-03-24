@@ -8,6 +8,14 @@ import resolvers from '../resolvers'
 import { OPS_ENV } from '../config'
 import type { GraphQL } from '../@types'
 
+const defaultQuery = /* GraphQL */ `
+  {
+    entities(type: loan) {
+      _id
+    }
+  }
+`
+
 const routes: FastifyPluginCallback = async function (server, _options, done) {
   server.log.debug({ path: join(__dirname, '../schemas/**/*.graphql') }, 'Load GraphQL schemas from')
   const schema = await loadSchema(join(__dirname, '../schemas/schema.graphql'), { loaders: [new GraphQLFileLoader()] })
@@ -29,20 +37,7 @@ const routes: FastifyPluginCallback = async function (server, _options, done) {
         ? false
         : {
             title: 'Centrifuge Outflux',
-            defaultQuery: /* GraphQL */ `
-              {
-                loans {
-                  sources {
-                    source
-                    objectId
-                    lastFetchedAt
-                    dataFrame {
-                      data
-                    }
-                  }
-                }
-              }
-            `,
+            defaultQuery,
           },
   })
 

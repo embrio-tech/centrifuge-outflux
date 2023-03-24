@@ -1,0 +1,14 @@
+#import Source from 'source.graphql'
+#import ObjectID from 'scalars.graphql'
+#import EntityType from 'enums.graphql'
+#import DateTime from 'scalars.graphql'
+#import Document from 'generic.graphql'
+#import ListQuery from 'generic.graphql'
+
+type Entity implements Document {
+  type: EntityType
+  sources(query: ListQuery): [Source!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  _id: ObjectID!
+}
