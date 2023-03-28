@@ -12,5 +12,10 @@ declare module 'fastify' {
       Source: Model<ISource>
     }
     verifyApiKey: (request: FastifyRequest) => Promise<void>
+    verifyJw3t: (request: FastifyRequest) => Promise<void>
+  }
+
+  export interface FastifyRequest {
+    jw3tPayload: Payload
   }
 }
