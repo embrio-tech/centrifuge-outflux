@@ -15,6 +15,9 @@ const resolvers: GraphQL.QueryResolvers<GraphQL.ServerContext> = {
   aggregations: async () => {
     return {}
   },
+  aggregate: async (_,{ pipeline, model },{ server }) => {
+    return server.models[model].aggregate(pipeline).exec()
+  },
 }
 
 export default resolvers

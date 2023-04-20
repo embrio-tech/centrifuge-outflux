@@ -1,0 +1,21 @@
+{
+  "model": "Entity",
+  "pipeline": [
+    {
+      "$match": {
+        "type": "loan"
+      }
+    },
+    {
+      "$lookup": {
+        "from": "sources",
+        "localField": "_id",
+        "foreignField": "entity",
+        "as": "sources"
+      }
+    },
+    {
+      "$unwind": "$sources"
+    }
+  ]
+}

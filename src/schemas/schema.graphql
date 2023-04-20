@@ -1,8 +1,10 @@
 #import Loan from 'loan.graphql'
 #import Entity from 'entity.graphql'
 #import EntityType from 'enums.graphql'
+#import Model from 'enums.graphql'
 #import ListQuery from 'generic.graphql'
 #import Aggregations from 'aggregations.graphql'
+#import JSON from 'scalars.graphql'
 
 type Query {
   """
@@ -16,7 +18,12 @@ type Query {
   entities(type: EntityType!, query: ListQuery): [Entity!]!
 
   """
-  Get pool aggregations
+  Get predefined pool aggregations
   """
   aggregations: Aggregations!
+
+  """
+  Execute custom aggregation pipelines
+  """
+  aggregate(model: Model!, pipeline: [JSON!]!): JSON
 }

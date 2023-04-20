@@ -1,0 +1,20 @@
+{
+  "model": "Frame",
+  "pipeline": [
+    {
+      "$lookup": {
+        "from": "sources",
+        "localField": "source",
+        "foreignField": "_id",
+        "as": "source"
+      }
+    },
+    {
+      "$set": {
+        "source": {
+          "$first": "$source"
+        }
+      }
+    }
+  ]
+}
