@@ -11,11 +11,24 @@
         "from": "sources",
         "localField": "_id",
         "foreignField": "entity",
-        "as": "sources"
+        "as": "source"
       }
     },
     {
-      "$unwind": "$sources"
+      "$unwind": "$source"
+    },
+    {
+      "$match": {
+        "source.type": "pod"
+      }
+    },
+    {
+      "$lookup": {
+        "from": "frames",
+        "localField": "source._id",
+        "foreignField": "source",
+        "as": "frames"
+      }
     }
   ]
 }
