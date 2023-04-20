@@ -9,9 +9,24 @@ import { OPS_ENV } from '../config'
 import type { GraphQL } from '../@types'
 
 const defaultQuery = /* GraphQL */ `
-  {
-    entities(type: loan) {
-      _id
+  query GetEntities {
+    # get list of loans
+    loans: entities(type: loan) {
+      sources {
+        type
+        frames {
+          data
+        }
+      }
+    }
+    # get list of loan templates
+    loanTemplates: entities(type: loanTemplate) {
+      sources {
+        type
+        frames {
+          data
+        }
+      }
     }
   }
 `
