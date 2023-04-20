@@ -12,6 +12,9 @@ const resolvers: GraphQL.QueryResolvers<GraphQL.ServerContext> = {
     const entities = await server.models.Entity.find({ ...filter, type }, undefined, { skip, limit, sort }).exec()
     return entities.map((entity) => entity.toObject())
   },
+  aggregations: async () => {
+    return {}
+  },
 }
 
 export default resolvers

@@ -2,6 +2,7 @@
 #import Entity from 'entity.graphql'
 #import EntityType from 'enums.graphql'
 #import ListQuery from 'generic.graphql'
+#import Aggregations from 'aggregations.graphql'
 
 type Query {
   """
@@ -13,4 +14,9 @@ type Query {
   Get a list of entities by type
   """
   entities(type: EntityType!, query: ListQuery): [Entity!]!
+
+  """
+  Get pool aggregations
+  """
+  aggregations: Aggregations!
 }
