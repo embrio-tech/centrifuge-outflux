@@ -9,66 +9,59 @@ const aggregation: Aggregation = {
       },
     },
     {
-      $lookup: {
-        from: 'sources',
-        localField: '_id',
-        foreignField: 'entity',
-        as: 'pod',
-        pipeline: [
-          {
-            $match: {
-              type: 'pod',
-            },
-          },
-          {
-            $project: {
-              sourceId: '$_id',
-              objectId: 1,
-              _id: 0,
-            },
-          },
-        ],
+      $project: {
+        _id: 0,
+        entityId: '$_id',
+        entityType: '$type',
       },
     },
     {
       $lookup: {
         from: 'sources',
-        localField: '_id',
+        localField: 'entityId',
         foreignField: 'entity',
-        as: 'chain',
+        as: 'sources',
         pipeline: [
           {
             $match: {
-              type: 'chain',
+              type: { $in: ['pod', 'chain', 'subql'] },
             },
           },
           {
             $project: {
               sourceId: '$_id',
+              type: '$type',
               objectId: 1,
               _id: 0,
             },
           },
-        ],
-      },
-    },
-    {
-      $lookup: {
-        from: 'sources',
-        localField: '_id',
-        foreignField: 'entity',
-        as: 'subql',
-        pipeline: [
           {
-            $match: {
-              type: 'subql',
+            $lookup: {
+              from: 'frames',
+              localField: 'sourceId',
+              foreignField: 'source',
+              as: 'latestFrame',
+              pipeline: [
+                {
+                  $sort: {
+                    createdAt: -1,
+                  },
+                },
+                { $limit: 1 },
+                {
+                  $project: {
+                    frameId: '$_id',
+                    data: 1,
+                    createdAt: 1,
+                    _id: 0,
+                  },
+                },
+              ],
             },
           },
           {
-            $project: {
-              sourceId: '$_id',
-              objectId: 1,
-              _id: 0,
+            $set: {
+              latestFrame: { $ifNull: [{ $first: '$latestFrame' }, null] },
             },
           },
         ],
@@ -76,95 +69,30 @@ const aggregation: Aggregation = {
     },
     {
       $set: {
-        chain: { $first: '$chain' },
-        pod: { $first: '$pod' },
-        subql: { $first: '$subql' },
-      },
-    },
-    {
-      $lookup: {
-        from: 'frames',
-        localField: 'pod.sourceId',
-        foreignField: 'source',
-        as: 'pod.latestFrame',
-        pipeline: [
-          {
-            $sort: {
-              createdAt: -1,
+        sources: {
+          $arrayToObject: {
+            $map: {
+              input: '$sources',
+              as: 'source',
+              in: [
+                '$$source.type',
+                {
+                  $unsetField: {
+                    field: 'source',
+                    input: '$$source',
+                  },
+                },
+              ],
             },
           },
-          { $limit: 1 },
-          {
-            $project: {
-              frameId: '$_id',
-              data: 1,
-              createdAt: 1,
-              _id: 0,
-            },
-          },
-        ],
-      },
-    },
-    {
-      $lookup: {
-        from: 'frames',
-        localField: 'chain.sourceId',
-        foreignField: 'source',
-        as: 'chain.latestFrame',
-        pipeline: [
-          {
-            $sort: {
-              createdAt: -1,
-            },
-          },
-          { $limit: 1 },
-          {
-            $project: {
-              frameId: '$_id',
-              data: 1,
-              createdAt: 1,
-              _id: 0,
-            },
-          },
-        ],
-      },
-    },
-    {
-      $lookup: {
-        from: 'frames',
-        localField: 'subql.sourceId',
-        foreignField: 'source',
-        as: 'subql.latestFrame',
-        pipeline: [
-          {
-            $sort: {
-              createdAt: -1,
-            },
-          },
-          { $limit: 1 },
-          {
-            $project: {
-              frameId: '$_id',
-              data: 1,
-              createdAt: 1,
-              _id: 0,
-            },
-          },
-        ],
-      },
-    },
-    {
-      $set: {
-        'chain.latestFrame': { $ifNull: [{ $first: '$chain.latestFrame' }, null] },
-        'pod.latestFrame': { $ifNull: [{ $first: '$pod.latestFrame' }, null] },
-        'subql.latestFrame': { $ifNull: [{ $first: '$subql.latestFrame' }, null] },
+        },
       },
     },
     {
       $group: {
         _id: 'ficoWeightedByNormalizedDebt',
-        numerator: { $sum: { $multiply: ['$pod.latestFrame.data.fico', '$chain.latestFrame.data.normalizedDebt'] } },
-        denominator: { $sum: '$chain.latestFrame.data.normalizedDebt' },
+        numerator: { $sum: { $multiply: ['$sources.pod.latestFrame.data.fico', '$sources.chain.latestFrame.data.normalizedDebt'] } },
+        denominator: { $sum: '$sources.chain.latestFrame.data.normalizedDebt' },
       },
     },
     {
