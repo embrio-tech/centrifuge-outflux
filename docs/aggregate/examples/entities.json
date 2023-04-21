@@ -11,23 +11,43 @@
         "from": "sources",
         "localField": "_id",
         "foreignField": "entity",
-        "as": "source"
+        "as": "source",
+        "pipeline": [
+          {
+            "$match": {
+              "type": { "$in": ["pod", "chain"] }
+            }
+          }
+        ]
       }
     },
     {
       "$unwind": "$source"
     },
     {
-      "$match": {
-        "source.type": "pod"
-      }
-    },
-    {
       "$lookup": {
         "from": "frames",
         "localField": "source._id",
         "foreignField": "source",
-        "as": "frames"
+        "as": "frame",
+        "pipeline": [
+          {
+            "$sort": {
+              "createdAt": -1
+            }
+          },
+          { "$limit": 1 }
+        ]
+      }
+    },
+    {
+      "$match": {
+        "frame": { "$ne": [] }
+      }
+    },
+    {
+      "$set": {
+        "frame": { "$first": "$frame" }
       }
     }
   ]
