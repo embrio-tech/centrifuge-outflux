@@ -1,4 +1,13 @@
+#import JSON from 'scalars.graphql'
+
 type Aggregations {
-  FICO: Float
-  outstandingDebt: Float
+  """
+  fico weighted average by normilized debt
+  """
+  ficoWeightedByNormalizedDebt: [JSON!]
+
+  """
+  cummulated normalized debt per state
+  """
+  sumOfNormalizedDebtPerState: [JSON!]
 }

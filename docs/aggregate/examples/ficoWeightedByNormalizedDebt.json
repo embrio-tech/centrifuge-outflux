@@ -167,7 +167,9 @@
     },
     {
       "$project": {
-        "value": { "$toDecimal": { "$divide": ["$numerator", "$denominator"] } }
+        "_id": 0,
+        "key1": "$_id",
+        "value1": { "$toDecimal": { "$divide": ["$numerator", "$denominator"] } }
       }
     }
   ]
