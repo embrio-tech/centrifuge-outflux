@@ -1,0 +1,54 @@
+{
+  "model": "Entity",
+  "pipeline": [
+    {
+      "$match": {
+        "type": "loan"
+      }
+    },
+    {
+      "$lookup": {
+        "from": "sources",
+        "localField": "_id",
+        "foreignField": "entity",
+        "as": "source",
+        "pipeline": [
+          {
+            "$match": {
+              "type": { "$in": ["pod", "chain"] }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "$unwind": "$source"
+    },
+    {
+      "$lookup": {
+        "from": "frames",
+        "localField": "source._id",
+        "foreignField": "source",
+        "as": "frame",
+        "pipeline": [
+          {
+            "$sort": {
+              "createdAt": -1
+            }
+          },
+          { "$limit": 1 }
+        ]
+      }
+    },
+    {
+      "$match": {
+        "frame": { "$ne": [] }
+      }
+    },
+    {
+      "$set": {
+        "frame": { "$first": "$frame" }
+      }
+    }
+  ]
+}

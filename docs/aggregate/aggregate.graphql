@@ -1,0 +1,3 @@
+query Aggregate($model: Model!, $pipeline: [JSON!]!) {
+  aggregate(model: $model, pipeline: $pipeline)
+}

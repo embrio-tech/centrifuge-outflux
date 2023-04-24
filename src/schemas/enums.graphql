@@ -9,3 +9,9 @@ enum SourceType {
   chain
   pod
 }
+
+enum Model {
+  Entity
+  Source
+  Frame
+}
