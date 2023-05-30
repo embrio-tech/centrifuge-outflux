@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type fastify, { FastifyRequest } from 'fastify'
+import type fastify from 'fastify'
 import type { Model } from 'mongoose'
 import type { IEntity, IFrame, ISource } from '../models'
 
@@ -16,6 +16,6 @@ declare module 'fastify' {
   }
 
   export interface FastifyRequest {
-    jw3tPayload: Payload
+    jw3tPayload: unknown
   }
 }
