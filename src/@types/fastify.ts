@@ -2,6 +2,7 @@
 import type fastify from 'fastify'
 import type { Model } from 'mongoose'
 import type { IEntity, IFrame, ISource } from '../models'
+import type { GraphQLSchema } from 'graphql'
 
 declare module 'fastify' {
   export interface FastifyInstance {
@@ -13,6 +14,8 @@ declare module 'fastify' {
     }
     verifyApiKey: (request: FastifyRequest) => Promise<void>
     verifyJw3t: (request: FastifyRequest) => Promise<void>
+
+    loadSchema: () => Promise<GraphQLSchema>
   }
 
   export interface FastifyRequest {

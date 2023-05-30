@@ -6,6 +6,7 @@ import { CORS_REGEX, NODE_ENV } from '../config'
 import mongoose from './mongoose'
 import models from './models'
 import auth from './auth'
+import schema from './schema'
 
 export async function registerServerPlugins(server: FastifyInstance) {
   // add kill handlers
@@ -23,6 +24,9 @@ export async function registerServerPlugins(server: FastifyInstance) {
   }
   // cors
   await server.register(cors, { origin: CORS_REGEX !== undefined ? new RegExp(CORS_REGEX) : '*' })
+
+  // graphQL schema builder plugin
+  await server.register(schema)
 
   // auth
   await server.register(auth)
