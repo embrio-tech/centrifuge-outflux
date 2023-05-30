@@ -96,8 +96,7 @@
     {
       "$project": {
         "_id": 0,
-        "key1": "$_id",
-        "value1": { "$toDecimal": { "$divide": ["$numerator", "$denominator"] } }
+        "ficoWeightedByNormalizedDebt": { "$toDecimal": { "$divide": ["$numerator", "$denominator"] } }
       }
     }
   ]
