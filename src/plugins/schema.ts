@@ -74,7 +74,7 @@ const plugin: FastifyPluginCallback = fp(
                   Object.entries(item).forEach(([key, value], index) => {
                     mapped[`key${index}`] = key
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    mapped[`value${index}`] = (value as any).toString()
+                    mapped[`value${index}`] = (value as any)?.toString()
                   })
                   return mapped
                 })
