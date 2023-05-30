@@ -5,10 +5,11 @@
     "module": "CommonJS",
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "allowUnreachableCode": true
+    "allowUnreachableCode": true,
+    "ignoreDeprecations": "5.0"
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "**/*.test.ts"],
+  "exclude": ["node_modules"],
   "ts-node": {
     "files": true
   }
