@@ -23,7 +23,13 @@ const plugin: FastifyPluginCallback = fp(
 
     server.log.debug('Schema plugin registerd')
   },
-  { name: 'schema' }
+  {
+    name: 'schema',
+    decorators: {
+      fastify: ['models'],
+    },
+    dependencies: ['models'],
+  }
 )
 
 export default plugin
