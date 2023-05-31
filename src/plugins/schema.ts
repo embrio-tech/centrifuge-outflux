@@ -11,38 +11,57 @@ import resolvers from '../resolvers'
 import type { PipelineStage } from 'mongoose'
 import type { GraphQL } from '../@types'
 import { loansWithLatestFramePerSource } from '../aggregations'
+import { JSONResolver } from 'graphql-scalars'
 
 const plugin: FastifyPluginCallback = fp(
   async function (server) {
     server.log.debug('Schema plugin registering...')
 
-    const loadAggregationSchema = async function (): Promise<GraphQLSchema | undefined> {
+    const loadStaticSchema = async function (): Promise<GraphQLSchema> {
+      // read graphql schemas from files
+      const schema = await loadSchema(join(__dirname, '../schemas/schema.graphql'), { loaders: [new GraphQLFileLoader()] })
+
+      // return schema with imported resolvers added
+      return addResolversToSchema({ schema, resolvers })
+    }
+
+    const loadAggregationsSchema = async function (): Promise<GraphQLSchema | undefined> {
+      // query pool meta data with predefined aggregations
       const poolEntity = await server.models.Entity.findOne({ type: 'pool' }, { _id: 1, type: 1 }).exec()
       if (!poolEntity) {
         server.log.warn({}, 'No pool entity found!')
         return undefined
       }
-
       const source = await server.models.Source.findOne({ type: 'ipfs', entity: poolEntity._id }, { _id: 1, type: 1 }).exec()
       if (!source) {
         server.log.warn({ poolEntity }, 'No ipfs source found for pool entity!')
         return undefined
       }
-
       const frame = await server.models.Frame.findOne({ source: source._id }, { data: 1 }, { sort: { createdAt: -1 } }).exec()
       if (!frame?.data) {
-        server.log.warn({ poolEntity, source, frame }, 'No frame found for source of pool entity!')
+        server.log.warn({ poolEntity, source, frame }, 'No frame found for ipfs source of pool entity!')
         return undefined
       }
 
+      // read predefined aggregations (aggregates) from pool metadata
       const { aggregates = {} } = frame.data as { aggregates?: Record<string, PipelineStage[]> }
       const aggregationNames = Object.keys(aggregates)
 
-      const aggregationSchemaTypes = /* GraphQL */ `
+      // build graphql types for aggregations
+      const aggregationsSchemaTypes = /* GraphQL */ `
             scalar JSON
 
             type Aggregations {
-             ${aggregationNames.map((name) => `${name}: [JSON!]`).join('\n')} 
+             ${aggregationNames
+               .map(
+                 (name) => `
+             """
+            Get ${name.replace(/([a-z0-9])([A-Z])/g, '$1 $2').toLowerCase()}.
+             """
+             ${name}: [JSON!]
+             `
+               )
+               .join('\n')} 
             }
 
             type Query {
@@ -52,10 +71,11 @@ const plugin: FastifyPluginCallback = fp(
               aggregations: Aggregations!
             }
             `
+      const schema = buildSchema(aggregationsSchemaTypes)
 
-      const schema = buildSchema(aggregationSchemaTypes)
-
+      // build graphql resolvers for aggregations
       const resolvers = {
+        JSON: JSONResolver,
         Query: {
           aggregations: async () => {
             return {}
@@ -84,28 +104,22 @@ const plugin: FastifyPluginCallback = fp(
         ),
       }
 
+      // return schema with resolvers
       return addResolversToSchema({ schema, resolvers })
     }
 
     server.decorate('loadSchema', async function (): Promise<GraphQLSchema> {
-      const subschemas: GraphQLSchema[] = []
-
-      // load default static schemas
-      server.log.debug({ path: join(__dirname, '../schemas/schema.graphql') }, 'Load GraphQL schemas from')
-      const schema = await loadSchema(join(__dirname, '../schemas/schema.graphql'), { loaders: [new GraphQLFileLoader()] })
-
-      server.log.debug(resolvers, 'Load GraphQL resolvers')
-      const schemaWithResolvers = addResolversToSchema({ schema, resolvers })
-
-      subschemas.push(schemaWithResolvers)
-
+      server.log.debug('Load graphQL schema and resolvers')
+      // load static schema
+      const staticSchema = await loadStaticSchema()
+      server.log.debug('Static schema loaded')
       // load dynamic pool specific schemas
-      const aggregationSchema = await loadAggregationSchema()
+      const aggregationsSchema = await loadAggregationsSchema()
+      server.log.debug('Dynamic aggregations schema loaded')
 
-      if (aggregationSchema) subschemas.push(aggregationSchema)
-
+      // combine schemas
       return stitchSchemas({
-        subschemas,
+        subschemas: aggregationsSchema ? [staticSchema, aggregationsSchema] : [staticSchema],
       })
     })
 
