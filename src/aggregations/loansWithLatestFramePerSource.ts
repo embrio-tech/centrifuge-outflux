@@ -88,20 +88,6 @@ const aggregation: Aggregation = {
         },
       },
     },
-    {
-      $group: {
-        _id: 'ficoWeightedByNormalizedDebt',
-        numerator: { $sum: { $multiply: ['$sources.pod.latestFrame.data.fico', '$sources.chain.latestFrame.data.normalizedDebt'] } },
-        denominator: { $sum: '$sources.chain.latestFrame.data.normalizedDebt' },
-      },
-    },
-    {
-      $project: {
-        _id: 0,
-        key1: '$_id',
-        value1: { $toDecimal: { $divide: ['$numerator', '$denominator'] } },
-      },
-    },
   ],
 }
 

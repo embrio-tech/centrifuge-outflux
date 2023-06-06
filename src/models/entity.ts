@@ -3,7 +3,8 @@ import fp from 'fastify-plugin'
 
 export enum EntityType {
   Loan = 'loan',
-  LoanTemplate = 'loanTemplate'
+  LoanTemplate = 'loanTemplate',
+  Pool = 'pool',
 }
 
 export interface IEntity {

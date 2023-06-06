@@ -1,10 +1,5 @@
 import { createYoga } from 'graphql-yoga'
 import type { FastifyPluginCallback } from 'fastify'
-import { addResolversToSchema } from '@graphql-tools/schema'
-import { loadSchema } from '@graphql-tools/load'
-import { GraphQLFileLoader } from '@graphql-tools/graphql-file-loader'
-import { join } from 'path'
-import resolvers from '../resolvers'
 import { OPS_ENV } from '../config'
 import type { GraphQL } from '../@types'
 
@@ -32,12 +27,6 @@ const defaultQuery = /* GraphQL */ `
 `
 
 const routes: FastifyPluginCallback = async function (server, _options, done) {
-  server.log.debug({ path: join(__dirname, '../schemas/**/*.graphql') }, 'Load GraphQL schemas from')
-  const schema = await loadSchema(join(__dirname, '../schemas/schema.graphql'), { loaders: [new GraphQLFileLoader()] })
-
-  server.log.debug(resolvers, 'Load GraphQL resolvers')
-  const schemaWithResolvers = addResolversToSchema({ schema, resolvers })
-
   const graphqlServer = createYoga<GraphQL.ServerContext>({
     // Integrate Fastify logger
     logging: {
@@ -46,7 +35,7 @@ const routes: FastifyPluginCallback = async function (server, _options, done) {
       warn: (...args) => args.forEach((arg) => server.log.warn(arg)),
       error: (...args) => args.forEach((arg) => server.log.error(arg)),
     },
-    schema: schemaWithResolvers,
+    schema: await server.loadSchema(),
     graphiql:
       OPS_ENV === 'production'
         ? false

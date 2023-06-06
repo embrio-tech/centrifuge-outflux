@@ -1,6 +1,7 @@
 enum EntityType {
   loan
   loanTemplate
+  pool
 }
 
 enum SourceType {
