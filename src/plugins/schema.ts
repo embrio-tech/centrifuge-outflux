@@ -12,6 +12,7 @@ import type { PipelineStage } from 'mongoose'
 import type { GraphQL } from '../@types'
 import { loansWithLatestFramePerSource } from '../aggregations'
 import { JSONResolver } from 'graphql-scalars'
+import { validatePipeline } from '../helpers/validators'
 
 const plugin: FastifyPluginCallback = fp(
   async function (server) {
@@ -43,8 +44,15 @@ const plugin: FastifyPluginCallback = fp(
         return undefined
       }
 
-      // read predefined aggregations (aggregates) from pool metadata
-      const { aggregates = {} } = frame.data as { aggregates?: Record<string, PipelineStage[]> }
+      // read predefined aggregations (aggregates) from pool metadata and filter out invalid pipelines
+      const { aggregates: rawAggregates = {} } = frame.data as { aggregates?: Record<string, PipelineStage[]> }
+      const aggregates = Object.fromEntries(
+        Object.entries(rawAggregates).filter(([name, pipeline]) => {
+          const { isValid, message } = validatePipeline(pipeline)
+          if (!isValid) server.log.warn(`Aggregation pipeline ${name} ignored as: ${message}`)
+          return isValid
+        })
+      )
       const aggregationNames = Object.keys(aggregates)
 
       // build graphql types for aggregations
