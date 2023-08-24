@@ -1,11 +1,28 @@
 import type { FastifyPluginCallback } from 'fastify'
 import fp from 'fastify-plugin'
 import type { Types } from 'mongoose'
+import type { DataTypes } from '../@types/models'
 
 export interface IFrame {
   source: Types.ObjectId
   data: unknown
   type?: string
+
+  /**
+   * the pool the entity belongs to
+   *
+   * @type {string}
+   * @memberof IFrame
+   */
+  poolId: string
+
+  /**
+   * The data type of the frame
+   *
+   * @type {DataTypes}
+   * @memberof IFrame
+   */
+  dataType: DataTypes
 }
 
 const plugin: FastifyPluginCallback = fp(
@@ -17,6 +34,8 @@ const plugin: FastifyPluginCallback = fp(
       {
         source: { type: Schema.Types.ObjectId, ref: 'Source', required: true },
         data: { type: Schema.Types.Mixed },
+        poolId: { type: 'String', required: true },
+        dataType: { type: 'String', required: true },
       },
       {
         optimisticConcurrency: true,

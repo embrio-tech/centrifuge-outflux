@@ -54,6 +54,8 @@
   },
   "dependencies": {
     "@dnlup/fastify-traps": "^2.0.0",
+    "@envelop/core": "^4.0.0",
+    "@envelop/generic-auth": "^6.0.0",
     "@fastify/auth": "^4.2.0",
     "@fastify/cors": "^8.2.0",
     "@fastify/helmet": "^10.1.0",

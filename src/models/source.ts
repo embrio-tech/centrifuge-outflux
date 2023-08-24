@@ -1,12 +1,13 @@
 import type { FastifyPluginCallback } from 'fastify'
 import fp from 'fastify-plugin'
 import type { Types } from 'mongoose'
+import { DataTypes } from '../@types/models'
 
 export enum SourceType {
   Chain = 'chain',
   Ipfs = 'ipfs',
   Pod = 'pod',
-  Subql = 'subql'
+  Subql = 'subql',
 }
 
 export interface ISource {
@@ -14,6 +15,22 @@ export interface ISource {
   type: SourceType
   objectId: string
   lastFetchedAt: Date
+
+  /**
+   * the pool the entity belongs to
+   *
+   * @type {string}
+   * @memberof ISource
+   */
+  poolId: string
+
+  /**
+   * the data type the source provides
+   *
+   * @type {DataTypes}
+   * @memberof ISource
+   */
+  dataType: DataTypes
 }
 
 const plugin: FastifyPluginCallback = fp(
@@ -27,6 +44,8 @@ const plugin: FastifyPluginCallback = fp(
         type: { type: 'String', required: true, enum: SourceType },
         objectId: { type: String, required: true },
         lastFetchedAt: { type: Date, required: false },
+        poolId: { type: 'String', required: true },
+        dataType: { type: 'String', required: true, enum: DataTypes },
       },
       {
         optimisticConcurrency: true,

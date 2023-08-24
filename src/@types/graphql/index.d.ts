@@ -8,6 +8,7 @@ declare namespace GraphQL {
     request: FastifyRequest
     reply: FastifyReply
     server: FastifyInstance
+    poolId: string
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

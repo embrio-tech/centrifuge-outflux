@@ -2,8 +2,8 @@
 import type fastify from 'fastify'
 import type { Model } from 'mongoose'
 import type { IEntity, IFrame, ISource } from '../models'
-import type { GraphQLSchema } from 'graphql'
 import type { AuthIdentity, AuthVerify } from './auth'
+import type { Schema } from './schema'
 
 declare module 'fastify' {
   export interface FastifyInstance {
@@ -15,7 +15,7 @@ declare module 'fastify' {
     }
     verify: AuthVerify
 
-    loadSchema: () => Promise<GraphQLSchema>
+    schema: Schema
   }
 
   export interface FastifyRequest {
