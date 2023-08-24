@@ -55,6 +55,11 @@ const plugin: FastifyPluginCallback = fp(
       )
       const aggregationNames = Object.keys(aggregates)
 
+      if (!aggregationNames.length) {
+        server.log.warn({ aggregates }, `No aggregations defined for pool entity with _id=${poolEntity._id}`)
+        return undefined
+      }
+
       // build graphql types for aggregations
       const aggregationsSchemaTypes = /* GraphQL */ `
             scalar JSON
@@ -79,6 +84,7 @@ const plugin: FastifyPluginCallback = fp(
               aggregations: Aggregations!
             }
             `
+      server.log.debug({ aggregationsSchemaTypes }, 'dynamic schema types')
       const schema = buildSchema(aggregationsSchemaTypes)
 
       // build graphql resolvers for aggregations
