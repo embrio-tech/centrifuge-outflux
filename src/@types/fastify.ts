@@ -2,7 +2,8 @@
 import type fastify from 'fastify'
 import type { Model } from 'mongoose'
 import type { IEntity, IFrame, ISource } from '../models'
-import type { GraphQLSchema } from 'graphql'
+import type { AuthIdentity, AuthVerify } from './auth'
+import type { Schema } from './schema'
 
 declare module 'fastify' {
   export interface FastifyInstance {
@@ -12,13 +13,12 @@ declare module 'fastify' {
       Frame: Model<IFrame>
       Source: Model<ISource>
     }
-    verifyApiKey: (request: FastifyRequest) => Promise<void>
-    verifyJw3t: (request: FastifyRequest) => Promise<void>
+    verify: AuthVerify
 
-    loadSchema: () => Promise<GraphQLSchema>
+    schema: Schema
   }
 
   export interface FastifyRequest {
-    jw3tPayload: unknown
+    identity: AuthIdentity | null
   }
 }

@@ -1,6 +1,11 @@
 import type { FastifyPluginCallback } from 'fastify'
 import fp from 'fastify-plugin'
 
+/**
+ * The type of an entity
+ *
+ * @enum {string}
+ */
 export enum EntityType {
   Loan = 'loan',
   LoanTemplate = 'loanTemplate',
@@ -8,7 +13,21 @@ export enum EntityType {
 }
 
 export interface IEntity {
+  /**
+   * the type of the entity
+   *
+   * @type {EntityType}
+   * @memberof IEntity
+   */
   type: EntityType
+
+  /**
+   * the pool the entity belongs to
+   *
+   * @type {string}
+   * @memberof IEntity
+   */
+  poolId: string
 }
 
 const plugin: FastifyPluginCallback = fp(
@@ -19,6 +38,7 @@ const plugin: FastifyPluginCallback = fp(
     const schema = new Schema<IEntity>(
       {
         type: { type: 'String', required: true, enum: EntityType },
+        poolId: { type: 'String', required: true },
       },
       {
         optimisticConcurrency: true,

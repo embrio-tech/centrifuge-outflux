@@ -1,7 +1,8 @@
 import { createYoga } from 'graphql-yoga'
+import { useSchemaByContext } from '@envelop/core'
 import type { FastifyPluginCallback } from 'fastify'
-import { OPS_ENV } from '../config'
-import type { GraphQL } from '../@types'
+import { OPS_ENV } from '../../../config'
+import type { GraphQL } from '../../../@types'
 
 const defaultQuery = /* GraphQL */ `
   query GetEntities {
@@ -35,7 +36,8 @@ const routes: FastifyPluginCallback = async function (server, _options, done) {
       warn: (...args) => args.forEach((arg) => server.log.warn(arg)),
       error: (...args) => args.forEach((arg) => server.log.error(arg)),
     },
-    schema: await server.loadSchema(),
+    plugins: [useSchemaByContext(server.schema.select)],
+    graphqlEndpoint: '/pools/:id/graphql',
     graphiql:
       OPS_ENV === 'production'
         ? false
@@ -48,20 +50,24 @@ const routes: FastifyPluginCallback = async function (server, _options, done) {
   // This will allow Fastify to forward multipart requests to GraphQL Yoga
   server.addContentTypeParser('multipart/form-data', {}, (req, payload, done) => done(null))
 
-  server.route({
+  server.route<{ Params: { id: string } }>({
     url: '/',
     method: ['GET', 'OPTIONS', 'POST'],
     preHandler:
       OPS_ENV === 'production'
-        ? server.auth([server.verifyApiKey, server.verifyJw3t], { relation: 'or' })
+        ? server.auth([server.verify.apiKey, server.verify.jw3t], { relation: 'or' })
         : async () => {
             return
           },
     handler: async (request, reply) => {
+      const {
+        params: { id },
+      } = request
       const response = await graphqlServer.handleNodeRequest(request, {
         request,
         reply,
         server,
+        poolId: id,
       })
       response.headers.forEach((value, key) => {
         reply.header(key, value)

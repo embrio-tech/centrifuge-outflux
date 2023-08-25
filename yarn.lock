@@ -857,12 +857,43 @@
     "@envelop/types" "3.0.1"
     tslib "2.5.0"
 
+"@envelop/core@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@envelop/core/-/core-4.0.0.tgz#3aa22494c55b65abedb2983e2722055e6873575d"
+  integrity sha512-6usEZO86hWT0ZajAbhOX0QXlV++lrlEmu8br6KQVvyXOxttiHADIibgfzb3GtSI7RnnJDnrcRb7Jynv6Lca3iQ==
+  dependencies:
+    "@envelop/types" "4.0.0"
+    tslib "^2.5.0"
+
+"@envelop/extended-validation@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@envelop/extended-validation/-/extended-validation-3.0.0.tgz#463274e9132f8cf8ec7e666c5093757f61919a85"
+  integrity sha512-nW3EjF27qghKszEbhSJFf7jTyoXZcU5XtWCHCuq+ghJOzkjMRQdMHkoiTWhScpAvJc0i26lyWTsZ/SZ0+xIRVA==
+  dependencies:
+    "@graphql-tools/utils" "^10.0.0"
+    tslib "^2.5.0"
+
+"@envelop/generic-auth@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@envelop/generic-auth/-/generic-auth-6.0.0.tgz#a1d1ed8bd00295a1ce55e00d4f7384c2bccd4f72"
+  integrity sha512-retM3YQPuUyLzhFR7x1E3lzGW8uh/Rp4m9DmCfdP35mHKL8jijJP8KbvLZb5WmSkVemt2L9ilP5m3opOy/2BiQ==
+  dependencies:
+    "@envelop/extended-validation" "^3.0.0"
+    tslib "^2.5.0"
+
 "@envelop/types@3.0.1":
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/@envelop/types/-/types-3.0.1.tgz#0afec3b3f1ab282bc828e6c42c5e26d76ffe363c"
   integrity sha512-Ok62K1K+rlS+wQw77k8Pis8+1/h7+/9Wk5Fgcc2U6M5haEWsLFAHcHsk8rYlnJdEUl2Y3yJcCSOYbt1dyTaU5w==
   dependencies:
     tslib "^2.4.0"
+
+"@envelop/types@4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@envelop/types/-/types-4.0.0.tgz#6491d15b471434e74cd4b2321b68b8bb95f0ae61"
+  integrity sha512-dmBK16VVfKCkqYYemvE+gt1cPBP0d9CbYO4yjNhSSYy9K+w6+Lw48wOLK238mSR339PNAvwj/JW/qzNy2llggA==
+  dependencies:
+    tslib "^2.5.0"
 
 "@envelop/validation-cache@^5.0.5":
   version "5.1.1"
