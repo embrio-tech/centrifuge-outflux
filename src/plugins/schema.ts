@@ -31,7 +31,7 @@ const plugin: FastifyPluginCallback = fp(
     server.log.debug('Load graphQL schema and resolvers')
     // load static schema
     const staticSchema = await loadStaticSchema()
-    server.log.debug('Static schema loaded')
+    server.log.debug('Shared static schema loaded')
 
     const loadAggregationsSchema = async function (poolEntityId: Types.ObjectId): Promise<GraphQLSchema | undefined> {
       // query pool meta data with predefined aggregations
@@ -60,7 +60,7 @@ const plugin: FastifyPluginCallback = fp(
       const aggregationNames = Object.keys(aggregates)
 
       if (!aggregationNames.length) {
-        server.log.warn({ aggregates, poolEntityId, poolId: frame.poolId }, 'No aggregations defined for pool!')
+        server.log.warn(`Pool ${frame.poolId}: No aggregations defined!`)
         return undefined
       }
 
@@ -121,6 +121,8 @@ const plugin: FastifyPluginCallback = fp(
         ),
       }
 
+      server.log.info(`Pool ${frame.poolId}: Aggregations schema built.`)
+
       // return schema with resolvers
       return addResolversToSchema({ schema, resolvers })
     }
@@ -128,7 +130,6 @@ const plugin: FastifyPluginCallback = fp(
     const loadPoolSchema = async function (poolEntityId: Types.ObjectId): Promise<GraphQLSchema> {
       // load dynamic pool specific schemas
       const aggregationsSchema = await loadAggregationsSchema(poolEntityId)
-      server.log.debug('Dynamic aggregations schema loaded')
 
       // combine schemas
       return stitchSchemas({
