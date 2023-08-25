@@ -74,7 +74,7 @@ const plugin: FastifyPluginCallback = fp(
                .map(
                  (name) => `
              """
-            Get ${name.replace(/([a-z0-9])([A-Z])/g, '$1 $2').toLowerCase()}.
+             Get ${name.replace(/([a-z0-9])([A-Z])/g, '$1 $2').toLowerCase()}.
              """
              ${name}: [JSON!] @skipAuth
              `
@@ -84,7 +84,7 @@ const plugin: FastifyPluginCallback = fp(
 
             type Query {
               """
-              Get predefined pool aggregations
+              Get predefined pool aggregations.
               """
               aggregations: Aggregations! @skipAuth
             }
