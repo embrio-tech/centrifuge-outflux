@@ -66,6 +66,7 @@ const plugin: FastifyPluginCallback = fp(
 
       // build graphql types for aggregations
       const aggregationsSchemaTypes = /* GraphQL */ `
+            directive @skipAuth on FIELD_DEFINITION
             scalar JSON
 
             type Aggregations {
@@ -75,7 +76,7 @@ const plugin: FastifyPluginCallback = fp(
              """
             Get ${name.replace(/([a-z0-9])([A-Z])/g, '$1 $2').toLowerCase()}.
              """
-             ${name}: [JSON!]
+             ${name}: [JSON!] @skipAuth
              `
                )
                .join('\n')} 
@@ -85,7 +86,7 @@ const plugin: FastifyPluginCallback = fp(
               """
               Get predefined pool aggregations
               """
-              aggregations: Aggregations!
+              aggregations: Aggregations! @skipAuth
             }
             `
       const schema = buildSchema(aggregationsSchemaTypes)
@@ -153,7 +154,11 @@ const plugin: FastifyPluginCallback = fp(
       schemas,
       select: function (context) {
         if (!context) throw new ApiError(500, undefined, 'Context is missing. Can not select schema.')
-        const { server, poolId } = context as GraphQL.ServerContext
+        const {
+          server,
+          serverRequest: { params },
+        } = context as GraphQL.ServerContext
+        const { id: poolId } = params as { id?: string }
 
         if (!poolId) throw new GraphQLError('pool id is undefined. Can not select schema.')
 

@@ -4,6 +4,7 @@
 #import DateTime from 'scalars.graphql'
 #import Document from 'generic.graphql'
 #import ListQuery from 'generic.graphql'
+#import 'directives.graphql'
 
 type Entity implements Document {
   type: EntityType

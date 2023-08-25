@@ -4,6 +4,7 @@
 #import Model from 'enums.graphql'
 #import ListQuery from 'generic.graphql'
 #import JSON from 'scalars.graphql'
+#import 'directives.graphql'
 
 type Query {
   """

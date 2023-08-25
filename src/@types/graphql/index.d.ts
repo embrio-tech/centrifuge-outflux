@@ -5,10 +5,9 @@ import './generated'
 
 declare namespace GraphQL {
   export interface ServerContext {
-    request: FastifyRequest
-    reply: FastifyReply
+    serverRequest: FastifyRequest
+    serverReply: FastifyReply
     server: FastifyInstance
-    poolId: string
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -3,6 +3,8 @@ import { useSchemaByContext } from '@envelop/core'
 import type { FastifyPluginCallback } from 'fastify'
 import { OPS_ENV } from '../../../config'
 import type { GraphQL } from '../../../@types'
+import { useGenericAuth } from '@envelop/generic-auth'
+import type { AuthIdentity } from '../../../@types/auth'
 
 const defaultQuery = /* GraphQL */ `
   query GetEntities {
@@ -36,7 +38,13 @@ const routes: FastifyPluginCallback = async function (server, _options, done) {
       warn: (...args) => args.forEach((arg) => server.log.warn(arg)),
       error: (...args) => args.forEach((arg) => server.log.error(arg)),
     },
-    plugins: [useSchemaByContext(server.schema.select)],
+    plugins: [
+      useGenericAuth<AuthIdentity, GraphQL.ServerContext>({
+        resolveUserFn: server.resolveGraphQLUser,
+        mode: 'protect-all',
+      }),
+      useSchemaByContext(server.schema.select),
+    ],
     graphqlEndpoint: '/pools/:id/graphql',
     graphiql:
       OPS_ENV === 'production'
@@ -53,21 +61,12 @@ const routes: FastifyPluginCallback = async function (server, _options, done) {
   server.route<{ Params: { id: string } }>({
     url: '/',
     method: ['GET', 'OPTIONS', 'POST'],
-    preHandler:
-      OPS_ENV === 'production'
-        ? server.auth([server.verify.apiKey, server.verify.jw3t], { relation: 'or' })
-        : async () => {
-            return
-          },
+    preHandler: [server.collect.multiple([server.collect.apiKey, server.collect.jw3t])],
     handler: async (request, reply) => {
-      const {
-        params: { id },
-      } = request
       const response = await graphqlServer.handleNodeRequest(request, {
-        request,
-        reply,
+        serverRequest: request,
+        serverReply: reply,
         server,
-        poolId: id,
       })
       response.headers.forEach((value, key) => {
         reply.header(key, value)
