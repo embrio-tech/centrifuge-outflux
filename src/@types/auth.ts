@@ -11,14 +11,22 @@ export type AuthCollector<RouteGeneric extends RouteGenericInterface = RouteGene
 ) => Promise<void>
 
 export type AuthCollectors<RouteGeneric extends RouteGenericInterface = RouteGenericInterface> = {
+  /** collects authentication for one auth method */
   [collector in AuthMethod]: AuthCollector<RouteGeneric>
 }
 
-export type AuthCollectFacotry<RouteGeneric extends RouteGenericInterface = RouteGenericInterface> = (
+export type AuthCollectMultiple<RouteGeneric extends RouteGenericInterface = RouteGenericInterface> = (
   collectors: AuthCollector<RouteGeneric>[]
 ) => (request: FastifyRequest<RouteGeneric>, reply: FastifyReply) => Promise<void>
 
-export type AuthCollect = { multiple: AuthCollectFacotry } & AuthCollectors
+export type AuthCollect = {
+  /**
+   * Collect from multiple collectors
+   *
+   * @type {AuthCollectMultiple}
+   */
+  multiple: AuthCollectMultiple
+} & AuthCollectors
 
 export interface AuthVerify {
   apiKey: (request: FastifyRequest) => Promise<void>

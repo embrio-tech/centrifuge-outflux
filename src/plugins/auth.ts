@@ -18,7 +18,7 @@ const plugin: FastifyPluginCallback = fp(async function (server) {
   })
 
   server.decorate<AuthCollect>('collect', {
-    // collect factory
+    // collect from multiple collectors
     multiple: (collectors) => {
       return async function (request, reply) {
         // run auth context collectors
@@ -74,9 +74,10 @@ const plugin: FastifyPluginCallback = fp(async function (server) {
     },
     jw3t: async (request: FastifyRequest) => {
       const { jw3tPayload, provider } = request.identity || {}
+      const { id: poolId } = request.params as { id?: string }
       if (provider === 'jw3t') {
-        server.log.debug({ jw3tPayload, provider }, 'verify jw3t payload')
-        // TODO: verify content of payload?
+        server.log.debug({ jw3tPayload, provider, poolId }, 'verify jw3t payload')
+        // TODO: verify content of payload and check if has access on pool with poolId
         if (!jw3tPayload) throw new ApiError(401, undefined, 'jw3t payload is missing!')
       } else {
         throw new ApiError(401, { provider }, 'Not the right authentication provider!')
