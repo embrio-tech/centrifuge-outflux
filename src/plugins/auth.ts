@@ -92,7 +92,7 @@ const plugin: FastifyPluginCallback = fp(async function (server) {
         const podReadAccess = poolPermissions.roles.includes('PODReadAccess')
         if (!podReadAccess) throw new ApiError(403, undefined, 'User does not have PODReadAccess!')
       } else {
-        throw new ApiError(403, { provider }, 'Not the right authentication provider!')
+        throw new ApiError(401, { provider }, 'Not the right authentication provider!')
       }
     },
   })
