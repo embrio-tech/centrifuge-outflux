@@ -1,15 +1,20 @@
 import type { FastifyPluginCallback, FastifyRequest } from 'fastify'
 import fp from 'fastify-plugin'
 import fauth from '@fastify/auth'
+import { u8aToHex } from '@polkadot/util'
+import { decodeAddress } from '@polkadot/util-crypto'
+import { firstValueFrom } from 'rxjs'
 import { PolkaJsVerifier, JW3TVerifier } from 'jw3t'
-import { API_KEY } from '../config'
+import { API_KEY, CHAIN_NODE } from '../config'
 import { ApiError } from '../helpers'
 import type { AuthCollect, AuthIdentity, AuthResolveGraphQLUser, AuthVerify } from '../@types/auth'
+import Centrifuge from '@centrifuge/centrifuge-js'
 
 const plugin: FastifyPluginCallback = fp(async function (server) {
   if (!API_KEY) throw new Error('There is no API_KEY specified on the environment!')
   const polkaJsVerifier = new PolkaJsVerifier()
   const verifier = new JW3TVerifier(polkaJsVerifier)
+  const centrifuge = new Centrifuge({ centrifugeWsUrl: CHAIN_NODE })
 
   server.decorateRequest<AuthIdentity | null>('identity', null)
   server.addHook('onRequest', async (request) => {
@@ -77,8 +82,15 @@ const plugin: FastifyPluginCallback = fp(async function (server) {
       const { id: poolId } = request.params as { id?: string }
       if (provider === 'jw3t') {
         server.log.debug({ jw3tPayload, provider, poolId }, 'verify jw3t payload')
-        // TODO: verify content of payload and check if has access on pool with poolId
         if (!jw3tPayload) throw new ApiError(401, undefined, 'jw3t payload is missing!')
+        if (!poolId) throw new ApiError(400, undefined, 'Unset poolId!')
+        const account = u8aToHex(decodeAddress(jw3tPayload.address))
+        const permissions = await firstValueFrom(centrifuge.pools.getUserPermissions([account]))
+        const poolPermissions = permissions.pools[poolId]
+        server.log.debug(poolPermissions, 'Pool permissions')
+        if (!poolPermissions) throw new ApiError(403, undefined, 'User is not authorized for the pool!')
+        const podReadAccess = poolPermissions.roles.includes('PODReadAccess')
+        if (!podReadAccess) throw new ApiError(403, undefined, 'User does not have PODReadAccess!')
       } else {
         throw new ApiError(401, { provider }, 'Not the right authentication provider!')
       }
@@ -95,7 +107,8 @@ const plugin: FastifyPluginCallback = fp(async function (server) {
       server.log.debug(error, 'graphql user not authenticated')
       return null
     }
-  })
+  }
+  )
 
   await server.register(fauth)
 })

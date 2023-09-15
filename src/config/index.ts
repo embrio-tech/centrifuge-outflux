@@ -13,4 +13,5 @@ export const {
   CORS_REGEX, // = '^https:\\/\\/((([0-9a-zA-Z-]*)\\.)+(?!a-zA-Z0-9-))?embrio\\.tech$',
   // DB_URI = 'mongodb://root:mysecret@localhost:27017/blender?authSource=admin',
   // GCP_SVC_ACC_KEY_BASE64 = undefined,
+  CHAIN_NODE = 'wss://fullnode.development.cntrfg.com',
 } = process.env
