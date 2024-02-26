@@ -20,7 +20,7 @@ export async function registerServerPlugins(server: FastifyInstance) {
 
   if (NODE_ENV === 'production') {
     // Security
-    await server.register(helmet, {})
+    await server.register(helmet, { crossOriginEmbedderPolicy: false })
   }
   // cors
   await server.register(cors, { origin: CORS_REGEX !== undefined ? new RegExp(CORS_REGEX) : '*' })
