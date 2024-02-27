@@ -24,7 +24,7 @@ export async function registerServerPlugins(server: FastifyInstance) {
       crossOriginEmbedderPolicy: false,
       contentSecurityPolicy: {
         directives: {
-          'script-src': ['unpgk.com', 'unsafe-inline'],
+          'script-src': ['unpkg.com', 'unsafe-inline'],
           'style-src': ['unpkg.com'],
           'img-src': ['raw.githubusercontent.com'],
         },
