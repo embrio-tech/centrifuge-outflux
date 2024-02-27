@@ -19,7 +19,7 @@ export async function registerServerPlugins(server: FastifyInstance) {
   await server.register(models)
 
   if (NODE_ENV === 'production') {
-    // Security
+    // Security and allow unpkg
     await server.register(helmet, {
       crossOriginEmbedderPolicy: false,
       contentSecurityPolicy: {
