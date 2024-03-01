@@ -26,6 +26,8 @@ RUN yarn install --production=true --frozen-lockfile
 FROM node:18.14-alpine as prod-build
 
 WORKDIR /usr/src/app
+RUN adduser -D indexer && chown -R indexer:indexer /usr/src/app
+USER indexer
 
 COPY package*.json ./
 COPY yarn*.lock ./
