@@ -1,5 +1,5 @@
 import Fastify from 'fastify'
-import { LOGGER_LEVEL } from '../config'
+import { SUBQL_TIMEOUT, LOGGER_LEVEL } from '../config'
 import { addServerHooks } from '../hooks'
 import { registerServerPlugins } from '../plugins'
 import routes from '../routes'
@@ -14,6 +14,7 @@ export async function buildServer() {
   // initiate server instance
   const server = Fastify({
     logger: { level: LOGGER_LEVEL || 'info' },
+    pluginTimeout: 10000 + Number(SUBQL_TIMEOUT),
   })
 
   // set custom error handler
