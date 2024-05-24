@@ -132,10 +132,14 @@ const plugin: FastifyPluginCallback = fp(
       return addResolversToSchema({ schema, resolvers })
     }
 
-    const loadSubquerySchema = async (): Promise<GraphQLSchema | SubschemaConfig> => {
+    const loadSubquerySchema = async (): Promise<GraphQLSchema | SubschemaConfig | undefined> => {
       const load = async function (): ReturnType<typeof loadSubquerySchema> {
         server.log.debug('Loading SubQuery schema...')
-        if (!SUBQL_ENDPOINT) throw new Error('Environment variable SUBQL_ENDPOINT is undefined!')
+
+        if (!SUBQL_ENDPOINT) {
+          server.log.warn('Not integrating SubQuery schema because SUBQL_ENDPOINT is undefined.')
+          return undefined
+        }
         const executor = buildHTTPExecutor({
           endpoint: SUBQL_ENDPOINT,
         })
@@ -160,16 +164,21 @@ const plugin: FastifyPluginCallback = fp(
       })
     }
 
+    const subquerySchema = await loadSubquerySchema()
+
     const loadPoolSchema = async function (poolEntityId: Types.ObjectId): Promise<GraphQLSchema> {
+      const subschemas: (GraphQLSchema | SubschemaConfig)[] = [staticSchema]
+
       // load dynamic pool specific schemas
       const aggregationsSchema = await loadAggregationsSchema(poolEntityId)
+      if (aggregationsSchema) subschemas.push(aggregationsSchema)
 
-      // TODO: use .env FLAG to only load subquery schema if SUBQL_ENDPOINT is defined
-      const subquerySchemaConfig = await loadSubquerySchema()
+      // add subquery schema if given
+      if (subquerySchema) subschemas.push(subquerySchema)
 
-      // combine schemas
+      // combine schemas into one
       return stitchSchemas({
-        subschemas: aggregationsSchema ? [staticSchema, aggregationsSchema, subquerySchemaConfig] : [staticSchema, subquerySchemaConfig],
+        subschemas,
       })
     }
 
