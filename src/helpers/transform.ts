@@ -1,27 +1,48 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Transform, SchemaTransform, RequestTransform, ResultTransform } from '@graphql-tools/delegate'
-import { filterSchema, pruneSchema } from '@graphql-tools/utils'
+import { filterSchema, pruneSchema, mapSchema, MapperKind } from '@graphql-tools/utils'
+import { mergeSchemas } from '@graphql-tools/schema'
+import type { FastifyBaseLogger } from 'fastify'
+import { Kind, type ConstDirectiveNode } from 'graphql'
 
 export class SubqueryTransform<T = any, TContext = Record<string, any>> implements Transform<T, TContext> {
-  log: any
-  constructor(log: any) {
+  log: FastifyBaseLogger
+  constructor(log: FastifyBaseLogger) {
     this.log = log
   }
 
   transformSchema: SchemaTransform<TContext> = function (this: InstanceType<typeof SubqueryTransform>, originalWrappingSchema) {
-    // this.log.debug(originalWrappingSchema, 'originalWrappingSchema')
-    // this.log.debug()
-    return pruneSchema(
+    this.log.debug('Transforming SubQuery schema')
+
+    const skipAuthTypeDef = /* GraphQL */ 'directive @skipAuth on FIELD_DEFINITION'
+
+    // Remove query field from root query object
+    const stripedQuerySchema = pruneSchema(
       filterSchema({
         schema: originalWrappingSchema,
-        // typeFilter: (_typeName) => true,
         rootFieldFilter: (_operationName, fieldName) => fieldName !== 'query',
-        // fieldFilter: (typeName, fieldName) => {
-        //   this.log.debug(fieldName)
-        //   return true
-        // },
-        // argumentFilter: (typeName, fieldName, argName) => isPublicName(argName),
       })
+    )
+
+    // add @skipAuth directive to each field to not require authentication for subquery fields
+    return mapSchema(
+      mergeSchemas({
+        schemas: [stripedQuerySchema],
+        typeDefs: [skipAuthTypeDef],
+      }),
+      {
+        [MapperKind.OBJECT_FIELD]: (fieldConfig) => {
+          const skipAuthDirective: ConstDirectiveNode = {
+            kind: Kind.DIRECTIVE,
+            name: {
+              kind: Kind.NAME,
+              value: 'skipAuth',
+            },
+          }
+          const directives = fieldConfig.astNode?.directives ? [...fieldConfig.astNode.directives, skipAuthDirective] : [skipAuthDirective]
+          return { ...fieldConfig, astNode: { ...fieldConfig.astNode, directives } as (typeof fieldConfig)['astNode'] }
+        },
+      }
     )
   }
   transformRequest?: RequestTransform<T, TContext>
