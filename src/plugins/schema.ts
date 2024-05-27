@@ -7,6 +7,8 @@ import { addResolversToSchema } from '@graphql-tools/schema'
 import { loadSchema } from '@graphql-tools/load'
 import { GraphQLFileLoader } from '@graphql-tools/graphql-file-loader'
 import { stitchSchemas } from '@graphql-tools/stitch'
+import type { SubschemaConfig, Transform } from '@graphql-tools/delegate'
+import { schemaFromExecutor } from '@graphql-tools/wrap'
 import resolvers from '../resolvers'
 import type { PipelineStage, Types } from 'mongoose'
 import type { GraphQL } from '../@types'
@@ -14,7 +16,9 @@ import { loansWithLatestFramePerSource } from '../aggregations'
 import { JSONResolver } from 'graphql-scalars'
 import { validatePipeline } from '../helpers/validators'
 import type { Schema } from '../@types/schema'
-import { ApiError } from '../helpers'
+import { ApiError, SubqueryTransform } from '../helpers'
+import { buildHTTPExecutor } from '@graphql-tools/executor-http'
+import { SUBQL_ENDPOINT, SUBQL_TIMEOUT } from '../config'
 
 const plugin: FastifyPluginCallback = fp(
   async function (server) {
@@ -128,13 +132,53 @@ const plugin: FastifyPluginCallback = fp(
       return addResolversToSchema({ schema, resolvers })
     }
 
+    const loadSubquerySchema = async (): Promise<GraphQLSchema | SubschemaConfig | undefined> => {
+      const load = async function (): ReturnType<typeof loadSubquerySchema> {
+        server.log.debug('Loading SubQuery schema...')
+
+        if (!SUBQL_ENDPOINT) {
+          server.log.warn('Not integrating SubQuery schema because SUBQL_ENDPOINT is undefined.')
+          return undefined
+        }
+        const executor = buildHTTPExecutor({
+          endpoint: SUBQL_ENDPOINT,
+        })
+        const schema = await schemaFromExecutor(executor)
+        const transforms: Transform[] = [new SubqueryTransform(server.log)]
+        server.log.debug('SubQuery schema loaded')
+        return { schema, executor, transforms }
+      }
+
+      return new Promise<Awaited<ReturnType<typeof load>>>((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          reject(new Error(`Timeout exeeded for loading SubQuery schema (SUBQL_TIMEOUT=${SUBQL_TIMEOUT}ms)`))
+        }, Number(SUBQL_TIMEOUT))
+        load()
+          .then((schema) => {
+            clearTimeout(timeout)
+            resolve(schema)
+          })
+          .catch((error) => {
+            reject(error)
+          })
+      })
+    }
+
+    const subquerySchema = await loadSubquerySchema()
+
     const loadPoolSchema = async function (poolEntityId: Types.ObjectId): Promise<GraphQLSchema> {
+      const subschemas: (GraphQLSchema | SubschemaConfig)[] = [staticSchema]
+
       // load dynamic pool specific schemas
       const aggregationsSchema = await loadAggregationsSchema(poolEntityId)
+      if (aggregationsSchema) subschemas.push(aggregationsSchema)
 
-      // combine schemas
+      // add subquery schema if given
+      if (subquerySchema) subschemas.push(subquerySchema)
+
+      // combine schemas into one
       return stitchSchemas({
-        subschemas: aggregationsSchema ? [staticSchema, aggregationsSchema] : [staticSchema],
+        subschemas,
       })
     }
 
